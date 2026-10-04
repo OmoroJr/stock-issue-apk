@@ -2,38 +2,40 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="theme-color" content="#0a1628">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Stock Issue</title>
 <style>@font-face{font-family:Carlito;font-weight:400;src:url(fonts/carlito-latin-400-normal.woff2) format("woff2")}@font-face{font-family:Carlito;font-weight:700;src:url(fonts/carlito-latin-700-normal.woff2) format("woff2")}</style>
+<meta name="theme-color" content="#0a1628">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="xlsx.full.min.js"></script>
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark;--bg:#0a1628;--card:#112240;--tx:#e6edf7;--mu:#8fa3c0;--bd:#23395d;--ac:#3b82f6;--acx:#ffffff;--dg:#ff7b7b}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark;--bg:#0a1628;--card:#112240;--tx:#e6edf7;--mu:#8fa3c0;--bd:#23395d;--ac:#3b82f6;--acx:#fff;--dg:#ff7b7b}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*:before,*:after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.4 Calibri,Carlito,"Segoe UI",Roboto,Arial,sans-serif}
 header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--bd);display:flex;z-index:5}
-header button{flex:1;padding:14px 4px;border:0;background:none;color:var(--mu);font:inherit;font-weight:600;border-bottom:3px solid transparent}
+header button{flex:1;padding:14px 2px;border:0;background:none;color:var(--mu);font:inherit;font-weight:700;border-bottom:3px solid transparent}
 header button.on{color:var(--ac);border-color:var(--ac)}
 main{padding:12px;max-width:640px;margin:0 auto}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
-label{display:block;font-size:13px;color:var(--mu);margin:8px 0 4px}
-input{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+label{display:block;font-size:14px;color:var(--mu);margin:8px 0 4px}
+input,select{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
 .row{display:flex;gap:8px}.row>*{flex:1}
 .btn{padding:13px;border:0;border-radius:10px;background:var(--ac);color:var(--acx);font:inherit;font-weight:700;width:100%;margin-top:10px}
 .btn.alt{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
 .res{max-height:240px;overflow-y:auto;border:1px solid var(--bd);border-radius:10px;margin-top:6px}
 .res div{padding:10px 12px;border-bottom:1px solid var(--bd)}.res div:last-child{border:0}
-.res small,.mu{color:var(--mu)}
+small,.mu{color:var(--mu)}
 .sel{background:var(--bg);border:2px solid var(--ac);border-radius:10px;padding:10px;margin-top:8px}
 .line{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
 .line:last-child{border:0}
+.line>span{min-width:0;overflow-wrap:anywhere}.iline{padding:10px 0;border-bottom:1px solid var(--bd)}.iline:last-child{border:0}.iline b{display:block;overflow-wrap:anywhere}.iline .row{align-items:center;margin-top:6px}.iline .row span{flex:1.4}.iline input{flex:1;min-width:110px;font-size:18px;font-weight:700;text-align:center}
 .x{border:0;background:none;color:var(--dg);font-size:20px;padding:4px 8px}
 .tblw{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:15px}
 th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
 td.n{white-space:normal}
-#setup{position:fixed;inset:0;background:var(--bg);z-index:20;display:none;padding:24px 16px;overflow:auto}#setup .card{max-width:420px;margin:12vh auto 0}.site{padding:6px 12px;background:var(--ac);color:var(--acx);font-weight:700;font-size:14px}
+#setup{position:fixed;inset:0;background:var(--bg);z-index:20;display:none;padding:24px 16px;overflow:auto}#setup .card{max-width:420px;margin:12vh auto 0}
+.site{padding:6px 12px;background:var(--ac);color:var(--acx);font-weight:700;font-size:15px}
 .msg{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:12px;border-radius:10px;text-align:center;display:none;z-index:9}
 </style>
 </head>
@@ -41,13 +43,15 @@ td.n{white-space:normal}
 <div id="setup"><div class="card"><h2 style="margin:0 0 4px">Set up this device</h2><p class="mu" style="margin:0 0 8px">Enter the site this app issues stock for. It is saved with every issue and used in the Excel report.</p><label>Site name</label><input id="sitein" placeholder="e.g. Mombasa Depot"><button class="btn" onclick="saveSite()">Start</button></div></div>
 <div class="site" id="sitebar"></div>
 <header>
-<button id="t1" class="on" onclick="tab(1)">Issue</button>
-<button id="t2" onclick="tab(2)">History</button>
-<button id="t3" onclick="tab(3)">Stock</button>
+<button id="t1" class="on" onclick="tab(1)">ITR</button>
+<button id="t2" onclick="tab(2)">Issue (IT)</button>
+<button id="t3" onclick="tab(3)">History</button>
+<button id="t4" onclick="tab(4)">Stock</button>
 </header>
 <main>
 <section id="p1">
 <div class="card">
+<b>Step 1: record the ITR (requested items)</b>
 <div class="row">
 <div><label>Date</label><input id="date" type="date"></div>
 <div><label>ITR number</label><input id="itr" placeholder="e.g. ITR-0001" autocapitalize="characters"></div>
@@ -57,8 +61,8 @@ td.n{white-space:normal}
 <div id="res" class="res" style="display:none"></div>
 <div id="sel" class="sel" style="display:none">
 <b id="selname"></b>
-<label>Quantity</label>
-<input id="qty" type="number" inputmode="decimal" min="0" step="any" placeholder="Quantity">
+<label>Quantity requested</label>
+<input id="qty" type="number" inputmode="decimal" min="0" step="any" placeholder="Quantity requested">
 <button class="btn" onclick="addLine()">Add to ITR</button>
 </div>
 </div>
@@ -71,19 +75,36 @@ td.n{white-space:normal}
 
 <section id="p2" style="display:none">
 <div class="card">
+<b>Step 2: issue against an IT</b>
+<label>ITR (only ITRs with outstanding items)</label>
+<select id="isel" onchange="loadIT()"></select>
+<div class="row">
+<div><label>IT number</label><input id="it" placeholder="e.g. IT-0001" autocapitalize="characters"></div>
+<div><label>Issue date</label><input id="idate" type="date"></div>
+</div>
+</div>
+<div class="card">
+<b>Quantity issued now</b> <span class="mu">(type the quantity in each box)</span>
+<div id="ilines"></div>
+<button class="btn" onclick="saveIT()">Save IT</button>
+</div>
+</section>
+
+<section id="p3" style="display:none">
+<div class="card">
 <div class="row">
 <div><label>From</label><input id="from" type="date" onchange="renderHist()"></div>
 <div><label>To</label><input id="to" type="date" onchange="renderHist()"></div>
 </div>
-<label>Filter by ITR or item</label>
+<label>Filter by ITR, IT or item</label>
 <input id="hf" type="search" oninput="renderHist()" placeholder="Filter…">
 <button class="btn" onclick="exportXlsx()">Export to Excel</button>
 <div class="mu" id="hsum" style="margin-top:8px"></div>
 </div>
-<div class="card tblw"><table><thead><tr><th>Date</th><th>ITR</th><th>Item</th><th>Qty</th><th></th></tr></thead><tbody id="hb"></tbody></table></div>
+<div class="card tblw"><table><thead><tr><th>Date</th><th>ITR</th><th>IT</th><th>Item</th><th>Req</th><th>Issued</th><th>Bal</th><th></th></tr></thead><tbody id="hb"></tbody></table></div>
 </section>
 
-<section id="p3" style="display:none">
+<section id="p4" style="display:none">
 <div class="card">
 <b>Stock list</b>
 <div class="mu" id="icount" style="margin:4px 0 8px"></div>
@@ -97,22 +118,21 @@ td.n{white-space:normal}
 <div id="msg" class="msg"></div>
 
 <script>
-var K_I="si_items",K_H="si_issues";
-var items=load(K_I),issues=load(K_H),cart=[],cur=null,curI=-1,dl=null,site="";
+var K_I="si_items",K_H="si_issues",K_R="si_itrs";
+var items=load(K_I),issues=load(K_H),itrs=load(K_R),cart=[],cur=null,curI=-1,dl=null,site="",cu=null;
 try{site=localStorage.getItem("si_site")||""}catch(e){}
-function showSite(){$("setup").style.display=site?"none":"block";$("sitebar").textContent=site?"Site: "+site:"";$("sitelbl").textContent=site}
-function saveSite(){var v=$("sitein").value.trim();if(!v){toast("Enter a site name");return}site=v;try{localStorage.setItem("si_site",v)}catch(e){}showSite()}
-function changeSite(){$("sitein").value=site;site="";$("setup").style.display="block"}
-showSite();
 function load(k){try{var v=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(v)?v:[]}catch(e){return[]}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){toast("Could not save on this device")}}
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function rnd(n){return Math.round(n*1e6)/1e6}
 function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
 function toast(t){var m=$("msg");m.textContent=t;m.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){m.style.display="none"},2600)}
-function tab(n){for(var i=1;i<=3;i++){$("p"+i).style.display=i==n?"":"none";$("t"+i).className=i==n?"on":""}if(n==2)renderHist();if(n==3)$("icount").textContent=items.length+" items loaded"}
-$("date").value=today();$("icount").textContent=items.length+" items loaded";
-try{$("itr").value=localStorage.getItem("si_itr")||""}catch(e){}
+function showSite(){$("setup").style.display=site?"none":"block";$("sitebar").textContent=site?"Site: "+site+"  ·  v5":"";$("sitelbl").textContent=site}
+function saveSite(){var v=$("sitein").value.trim();if(!v){toast("Enter a site name");return}site=v;try{localStorage.setItem("si_site",v)}catch(e){}showSite()}
+function changeSite(){$("sitein").value=site;site="";$("setup").style.display="block"}
+function tab(n){for(var i=1;i<=4;i++){$("p"+i).style.display=i==n?"":"none";$("t"+i).className=i==n?"on":""}if(n==2)fillISel();if(n==3)renderHist();if(n==4)$("icount").textContent=items.length+" items loaded"}
+$("date").value=today();$("idate").value=today();$("icount").textContent=items.length+" items loaded";showSite();
 
 function search(){
   var q=$("q").value.trim().toLowerCase(),r=$("res");
@@ -130,39 +150,83 @@ function pick(i){cur=items[i];curI=i;$("selname").textContent=cur.n+(cur.s!==und
 function addLine(){
   var q=parseFloat($("qty").value);
   if(!cur||!(q>0)){toast("Enter a quantity above 0");return}
-  if(cur.s!==undefined){var inC=0;cart.forEach(function(l){if(l.idx===curI)inC+=l.qty});if(q+inC>cur.s&&!confirm("Only "+cur.s+" in stock. Issue anyway?"))return}
-  cart.push({item:cur.n,qty:q,idx:curI});cur=null;$("sel").style.display="none";$("q").focus();renderCart()
+  cart.push({item:cur.n,qty:q});cur=null;$("sel").style.display="none";$("q").focus();renderCart()
 }
 function renderCart(){
   $("cnt").textContent=cart.length?"("+cart.length+")":"";
-  $("lines").innerHTML=cart.length?cart.map(function(l,i){return '<div class="line"><span>'+esc(l.item)+'<br><small class="mu">Qty '+l.qty+'</small></span><button class="x" onclick="cart.splice('+i+',1);renderCart()">✕</button></div>'}).join(""):'<div class="mu" style="padding:8px 0">Nothing added yet</div>'
+  $("lines").innerHTML=cart.length?cart.map(function(l,i){return '<div class="line"><span>'+esc(l.item)+'<br><small>Requested '+l.qty+'</small></span><button class="x" onclick="cart.splice('+i+',1);renderCart()">✕</button></div>'}).join(""):'<div class="mu" style="padding:8px 0">Nothing added yet</div>'
 }
 function saveITR(){
-  var itr=$("itr").value.trim(),d=$("date").value;
-  if(!itr){toast("Enter the ITR number");return}
+  var n=$("itr").value.trim(),d=$("date").value;
+  if(!n){toast("Enter the ITR number");return}
   if(!d){toast("Pick a date");return}
   if(!cart.length){toast("Add at least one item");return}
-  cart.forEach(function(l){issues.push({d:d,itr:itr,item:l.item,qty:l.qty,site:site});var it=items[l.idx];if(it&&it.n===l.item&&it.s!==undefined)it.s=Math.round((it.s-l.qty)*1e6)/1e6});
-  save(K_H,issues);save(K_I,items);try{localStorage.setItem("si_itr",itr)}catch(e){}
-  toast("Saved "+cart.length+" line(s) under "+itr);cart=[];renderCart();$("itr").value="";$("date").value=today()
+  var o=itrs.filter(function(x){return x.itr.toLowerCase()===n.toLowerCase()})[0];
+  if(!o){o={itr:n,d:d,site:site,lines:[]};itrs.push(o)}
+  cart.forEach(function(l){
+    var e=o.lines.filter(function(x){return x.item===l.item})[0];
+    if(e)e.req=rnd(e.req+l.qty);else o.lines.push({item:l.item,req:l.qty,iss:0})
+  });
+  save(K_R,itrs);toast("ITR "+n+" saved. Now issue it in the Issue (IT) tab");cart=[];renderCart();$("itr").value=""
+}
+function outst(l){return rnd(l.req-l.iss)}
+function fillISel(){
+  var open=itrs.filter(function(o){return o.lines.some(function(l){return outst(l)>0})}),s=$("isel"),keep=s.value;
+  s.innerHTML=open.length?open.map(function(o){return '<option value="'+esc(o.itr)+'">'+esc(o.itr)+' ('+o.d+')</option>'}).join(""):'<option value="">No open ITRs: record one first</option>';
+  if(keep&&open.some(function(o){return o.itr===keep}))s.value=keep;
+  loadIT()
+}
+function loadIT(){
+  cu=itrs.filter(function(o){return o.itr===$("isel").value})[0]||null;
+  $("ilines").innerHTML=cu?cu.lines.map(function(l,i){var o=outst(l);return o>0?'<div class="iline"><b>'+esc(l.item)+'</b><div class="row"><small>Requested '+l.req+' · Issued '+l.iss+'<br>Outstanding '+o+'</small><input id="iq'+i+'" type="number" inputmode="decimal" min="0" step="any" value="'+o+'" placeholder="Qty issued" aria-label="Quantity issued"></div></div>':''}).join(""):'<div style="padding:8px 0"><div class="mu">No quantity box appears until an ITR has been saved. Open ITRs: '+itrs.filter(function(o){return o.lines.some(function(l){return outst(l)>0})}).length+'.</div><button class="btn alt" onclick="tab(1)">Go to ITR tab to record one</button></div>'
+}
+function findItem(n){for(var i=0;i<items.length;i++)if(items[i].n===n)return items[i];return null}
+function saveIT(){
+  var it=$("it").value.trim(),d=$("idate").value;
+  if(!cu){toast("Select an ITR");return}
+  if(!it){toast("Enter the IT number");return}
+  if(!d){toast("Pick an issue date");return}
+  var todo=[];
+  for(var i=0;i<cu.lines.length;i++){
+    var l=cu.lines[i],e=$("iq"+i);if(!e)continue;
+    var q=parseFloat(e.value);if(!(q>0))continue;
+    var o=outst(l),st=findItem(l.item);
+    if(q>o&&!confirm(l.item+": issuing "+q+" but only "+o+" outstanding on the ITR. Continue?"))return;
+    if(st&&st.s!==undefined&&q>st.s&&!confirm(l.item+": only "+st.s+" in stock. Issue anyway?"))return;
+    todo.push({l:l,q:q,st:st})
+  }
+  if(!todo.length){toast("Enter a quantity issued for at least one item");return}
+  todo.forEach(function(t){
+    t.l.iss=rnd(t.l.iss+t.q);
+    issues.push({d:d,itr:cu.itr,it:it,item:t.l.item,req:t.l.req,qty:t.q,bal:rnd(t.l.req-t.l.iss),site:site});
+    if(t.st&&t.st.s!==undefined)t.st.s=rnd(t.st.s-t.q)
+  });
+  save(K_H,issues);save(K_R,itrs);save(K_I,items);
+  toast("Saved "+it+" against "+cu.itr);$("it").value="";fillISel()
 }
 function filtered(){
   var f=$("from").value,t=$("to").value,q=$("hf").value.trim().toLowerCase();
   return issues.map(function(r,i){return{r:r,i:i}}).filter(function(x){
     var r=x.r;if(f&&r.d<f)return false;if(t&&r.d>t)return false;
-    return !q||(r.itr+" "+r.item).toLowerCase().indexOf(q)>=0
+    return !q||(r.itr+" "+(r.it||"")+" "+r.item).toLowerCase().indexOf(q)>=0
   }).sort(function(a,b){return a.r.d<b.r.d?1:a.r.d>b.r.d?-1:b.i-a.i})
 }
 function renderHist(){
-  var l=filtered();
-  $("hsum").textContent=l.length+" line(s) shown, "+issues.length+" total";
-  $("hb").innerHTML=l.slice(0,300).map(function(x){var r=x.r;return '<tr><td>'+r.d+'</td><td>'+esc(r.itr)+'</td><td class="n">'+esc(r.item)+'</td><td>'+r.qty+'</td><td><button class="x" onclick="del('+x.i+')">✕</button></td></tr>'}).join("")||'<tr><td colspan="5" class="mu">No issues recorded</td></tr>'
+  var l=filtered(),tq=0;l.forEach(function(x){tq+=x.r.qty});
+  $("hsum").textContent=l.length+" line(s) shown, total quantity issued "+rnd(tq)+" ("+issues.length+" lines recorded)";
+  $("hb").innerHTML=l.slice(0,300).map(function(x){var r=x.r;return '<tr><td>'+r.d+'</td><td>'+esc(r.itr)+'</td><td>'+esc(r.it||"")+'</td><td class="n">'+esc(r.item)+'</td><td>'+(r.req===undefined?"":r.req)+'</td><td>'+r.qty+'</td><td>'+(r.bal===undefined?"":r.bal)+'</td><td><button class="x" onclick="del('+x.i+')">✕</button></td></tr>'}).join("")||'<tr><td colspan="8" class="mu">No issues recorded</td></tr>'
 }
-function del(i){if(confirm("Delete this line?")){issues.splice(i,1);save(K_H,issues);renderHist()}}
+function del(i){
+  if(!confirm("Delete this line? The quantity returns to the ITR and to stock."))return;
+  var r=issues[i],o=itrs.filter(function(x){return x.itr===r.itr})[0];
+  if(o){var ln=o.lines.filter(function(x){return x.item===r.item})[0];if(ln)ln.iss=rnd(Math.max(0,ln.iss-r.qty))}
+  var st=findItem(r.item);if(st&&st.s!==undefined)st.s=rnd(st.s+r.qty);
+  issues.splice(i,1);save(K_H,issues);save(K_R,itrs);save(K_I,items);renderHist()
+}
 async function exportXlsx(){
   var l=filtered();if(!l.length){toast("Nothing to export");return}
-  var rows=[["Date","ITR Number","Item Issued","Quantity","Site"]].concat(l.slice().reverse().map(function(x){return[x.r.d,x.r.itr,x.r.item,x.r.qty,x.r.site||site]}));
-  var ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:12},{wch:16},{wch:50},{wch:10},{wch:18}];
+  var rows=[["Date","ITR Number","IT Number","Item Issued","Quantity Requested","Quantity Issued","Balance Outstanding","Site"]].concat(l.slice().reverse().map(function(x){var r=x.r;return[r.d,r.itr,r.it||"",r.item,r.req===undefined?"":r.req,r.qty,r.bal===undefined?"":r.bal,r.site||site]}));
+  var ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:12},{wch:16},{wch:16},{wch:50},{wch:18},{wch:16},{wch:20},{wch:18}];
   var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Issue Report");
   var name="issue-report-"+site.replace(/[^\w-]+/g,"_")+"-"+today()+".xlsx";
   try{
@@ -200,7 +264,7 @@ function importItems(inp){
   };
   rd.readAsArrayBuffer(f)
 }
-function clearItems(){if(confirm("Remove the whole item list? Recorded issues are kept.")){items=[];save(K_I,items);$("icount").textContent="0 items loaded"}}
+function clearItems(){if(confirm("Remove the whole stock list? Recorded issues are kept.")){items=[];save(K_I,items);$("icount").textContent="0 items loaded"}}
 renderCart();
 </script>
 </body>
